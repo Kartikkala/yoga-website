@@ -64,6 +64,17 @@ export function getPosesByOptions(options)
     return result
 }
 
+export function getAllBodyParts()
+{
+    try{
+        return bodyParts.find().project({_id : 0}).toArray()
+    }
+    catch(exception)
+    {
+        return {"message" : exception}
+    }
+}
+
 
 export function getAllCategories()
 {
