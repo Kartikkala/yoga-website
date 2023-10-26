@@ -8,7 +8,8 @@ poseRoutes.get('/', async (request, response)=>{
     const difficultyLevel = request.query.level
     const categoryID = request.query.category
     const bodyPart = request.query.bodyPart
-    const optionsObject = {name : name, bodyPart : bodyPart, difficultyLevel : undefined, categoryID : undefined}
+    const problem = request.query.problem
+    const optionsObject = {name : name, bodyPart : bodyPart, difficultyLevel : undefined, categoryID : undefined, problem : undefined}
 
     if(difficultyLevel)
     {
@@ -20,7 +21,12 @@ poseRoutes.get('/', async (request, response)=>{
         optionsObject.categoryID = parseInt(categoryID, 10)
     }
 
-    if(!name && !difficultyLevel && !categoryID && !bodyPart)
+    if(problem)
+    {
+        optionsObject.problem = problem.toLowerCase()
+    }
+
+    if(!name && !difficultyLevel && !categoryID && !bodyPart && !problem)
     {
         response.json(await getAllPoses())
     }
