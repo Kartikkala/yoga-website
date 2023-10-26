@@ -18,6 +18,7 @@ export function getPosesByOptions(options)
     let difficultyLevel = options.difficultyLevel
     let categoryID = options.categoryID
     let bodyPart = options.bodyPart
+    let result = undefined
     if(difficultyLevel > 3)
     {
         difficultyLevel = 3
@@ -30,43 +31,44 @@ export function getPosesByOptions(options)
     try{
         if(name)
         {
-            return posesCollection.findOne({ $or : [{english_name : pose}, {sanskrit_name : pose}, {sanskrit_name_adapted : pose}]})
+            result = posesCollection.findOne({ $or : [{english_name : pose}, {sanskrit_name : pose}, {sanskrit_name_adapted : pose}]}).project({_id : 0, id : 0, category_id : 0})
         }
         else if(bodyPart && difficultyLevel)
         {
-            return posesCollection.find({$and : [{targets : { $regex: bodyPart, $options: "i" }}, {difficulty_level: difficultyLevel}]}).toArray()
+            result = posesCollection.find({$and : [{targets : { $regex: bodyPart, $options: "i" }}, {difficulty_level: difficultyLevel}]}).project({_id : 0, id : 0, category_id : 0}).toArray()
         }
         else if(categoryID && difficultyLevel)
         {
-            return posesCollection.find({$and : [{category_id : categoryID}, {difficultyLevel : difficultyLevel}]}).toArray()
+            result = posesCollection.find({$and : [{category_id : categoryID}, {difficultyLevel : difficultyLevel}]}).project({_id : 0, id : 0, category_id : 0}).toArray()
         }
         else if(bodyPart && categoryID)
         {
-            return {'message' : "Body part and categoryID are not together supported!!!"}
+            result = {'message' : "Body part and categoryID are not together supported!!!"}
         }
         else if(bodyPart)
         {
-            return posesCollection.find({targets : { $regex: bodyPart, $options: "i" }}).sort({ difficulty: 1 }).toArray()
+            result = posesCollection.find({targets : { $regex: bodyPart, $options: "i" }}).project({_id : 0, id : 0, category_id : 0}).sort({ difficulty: 1 }).toArray()
         }
         else if(categoryID)
         {
-            return posesCollection.find({category_id : categoryID}).sort({ difficulty: 1 }).toArray()
+            result = posesCollection.find({category_id : categoryID}).project({_id : 0, id : 0, category_id : 0}).sort({ difficulty: 1 }).toArray()
         }
         else if(difficultyLevel)
         {
-            return posesCollection.find({difficulty_level : difficultyLevel}).toArray()
+            result = posesCollection.find({difficulty_level : difficultyLevel}).project({_id : 0, id : 0, category_id : 0}).toArray()
         }
     }
     catch(exception){
-        console.log(exception)
+        result = {'message' : exception}
     } 
+    return result
 }
 
 
 export function getAllCategories()
 {
     try{
-        return categoryCollection.find().toArray()
+        return categoryCollection.find().project({_id : 0}).toArray()
     }
     catch(exception)
     {
