@@ -65,5 +65,11 @@ export function getPosesByOptions(options)
 
 export function getAllCategories()
 {
-    return categoryCollection.find().toArray()
+    try{
+        return categoryCollection.find().toArray()
+    }
+    catch(exception)
+    {
+        return {"message": exception}
+    }
 }
